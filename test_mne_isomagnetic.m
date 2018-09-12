@@ -1,10 +1,10 @@
-% Minimum Norm Estimates (MNE)‚ÌƒeƒXƒgƒXƒNƒŠƒvƒg
+% Minimum Norm Estimates (MNE)ã®ãƒ†ã‚¹ãƒˆã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 
 close all;
 clear variables;
 
-addpath('../meglib','../fifffile');
-filename = '../yano_aircon_sound/shukunami_atsuto/141224/cool02081632.fif';
+% addpath('../meglib','../fifffile');
+filename = '../hoge';
 ind_stim = 1;
 ind_t = 118;
 badch = [28,99,100,103,111,120];
@@ -23,25 +23,25 @@ ind_ch = 1:num_ch;
 %         ];
 
 
-% Fiffƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ
+% Fiffãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿
 [S, status] = read_fif(filename);
-Rch = S.meas_info.ch_info.r0(:,1:num_ch); % ƒZƒ“ƒT‚ÌˆÊ’uƒxƒNƒgƒ‹
+Rch = S.meas_info.ch_info.r0(:,1:num_ch); % ã‚»ãƒ³ã‚µã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«
 Ex = S.meas_info.ch_info.ex(:,1:num_ch); % 
 Ey = S.meas_info.ch_info.ey(:,1:num_ch);
-N = S.meas_info.ch_info.ez(:,1:num_ch); % ŠeƒZƒ“ƒT‚Ì–@üƒxƒNƒgƒ‹
+N = S.meas_info.ch_info.ez(:,1:num_ch); % å„ã‚»ãƒ³ã‚µã®æ³•ç·šãƒ™ã‚¯ãƒˆãƒ«
 
-% HPIƒRƒCƒ‹‚ÌˆÊ’uƒxƒNƒgƒ‹
+% HPIã‚³ã‚¤ãƒ«ã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«
 Rhpi = zeros(3,3);
 Rhpi(:,1)=S.meas_info.hpi_result.dig_point(1).r;
 Rhpi(:,2)=S.meas_info.hpi_result.dig_point(2).r;
 Rhpi(:,3)=S.meas_info.hpi_result.dig_point(3).r;
 
-% DeviceÀ•WŒn‚©‚çHeadÀ•WŒn‚É•ÏŠ·‚·‚é‰ñ“]s—ñ‚Æ•½sˆÚ“®
+% Deviceåº§æ¨™ç³»ã‹ã‚‰Headåº§æ¨™ç³»ã«å¤‰æ›ã™ã‚‹å›è»¢è¡Œåˆ—ã¨å¹³è¡Œç§»å‹•
 Rot = S.meas_info.hpi_result.coord_trans.rot;
 mv = S.meas_info.hpi_result.coord_trans.move;
 
 
-% ‰ÁZ”gŒ`‚Ì“Ç‚İ‚İ
+% åŠ ç®—æ³¢å½¢ã®èª­ã¿è¾¼ã¿
 X = S.processed_data.evoked(ind_stim).aspect(1).epoch(1:122,:);
 cal = S.meas_info.ch_info.cal(1:122)*1e13;
 X = bsxfun(@times,X,cal');
@@ -57,74 +57,74 @@ fftsize = 1024;
 clear S;
 
 
-% ƒZƒ“ƒTˆÊ’u‚Æ‚»‚ÌÀ•WŒn‚ğæ“¾
-ind_odd = 1:2:num_ch;% Šï”ƒ`ƒƒƒlƒ‹‚ÌƒCƒ“ƒfƒbƒNƒX
+% ã‚»ãƒ³ã‚µä½ç½®ã¨ãã®åº§æ¨™ç³»ã‚’å–å¾—
+ind_odd = 1:2:num_ch;% å¥‡æ•°ãƒãƒ£ãƒãƒ«ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
 Rs = Rch(:,ind_odd);
 Ex_s = Ex(:,ind_odd);
 Ey_s = Ey(:,ind_odd);
 N_s = N(:,ind_odd);
 
 
-% ƒ`ƒƒƒlƒ‹‚Ìó‘Ô‚ğ¦‚·˜_—ƒxƒNƒgƒ‹
+% ãƒãƒ£ãƒãƒ«ã®çŠ¶æ…‹ã‚’ç¤ºã™è«–ç†ãƒ™ã‚¯ãƒˆãƒ«
 sta_ch = false(num_ch,1);
 sta_ch(ind_ch) = true;
 sta_ch(badch) = false;
 num_ch = nnz(sta_ch);
 
-% ƒZƒ“ƒT‚ğ¦‚·ƒpƒbƒ`
+% ã‚»ãƒ³ã‚µã‚’ç¤ºã™ãƒ‘ãƒƒãƒ
 % [Xs, Ys, Zs] = MEGSensorPatch(Rch,Ex);
 
-% g—p‚·‚éƒ`ƒƒƒlƒ‹‚ÌŒÀ’è
+% ä½¿ç”¨ã™ã‚‹ãƒãƒ£ãƒãƒ«ã®é™å®š
 Rch = Rch(:,sta_ch);
 Ex = Ex(:,sta_ch);
 N = N(:,sta_ch);
 X = X(sta_ch,:);
 
 
-% ƒtƒBƒ‹ƒ^ƒŠƒ“ƒO
+% ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°
 Y = neuromagfilter2(X,wc,wt,'bandpass',fftsize,2);
-% ƒx[ƒXƒ‰ƒCƒ“ˆ—
+% ãƒ™ãƒ¼ã‚¹ãƒ©ã‚¤ãƒ³å‡¦ç†
 Y = bsxfun(@minus,Y,mean(Y(:,1:ind_base),2));
 
-% ƒmƒCƒY‚Ì•ªU‹¤•ªUs—ñ‚Ì„’è
+% ãƒã‚¤ã‚ºã®åˆ†æ•£å…±åˆ†æ•£è¡Œåˆ—ã®æ¨å®š
 C = Y(:,1:ind_base)*Y(:,1:ind_base)'/(ind_base-1);
-% •ªU‹¤•ªUs—ñ‚Ì³‘¥‰»
+% åˆ†æ•£å…±åˆ†æ•£è¡Œåˆ—ã®æ­£å‰‡åŒ–
 ep = 0.05;
 C = C + ep*trace(C)*eye(num_ch)/num_ch;
 
-% Neuromag122‚ÌŒÅ’èƒpƒ‰ƒ[ƒ^
-dx = 8.1e-3; % ƒZƒ“ƒT‚Ì’†S‚©‚çƒRƒCƒ‹‚Ì’†S‚Ü‚Å‚Ì‹——£‚Í8.1mm
-w = 0.5./[dx -dx]; % ƒZƒ“ƒT‚É‚¨‚¯‚é‹óŠÔ”÷•ª‚ğ‹ß—‚·‚é‚½‚ß‚Ìd‚İ
+% Neuromag122ã®å›ºå®šãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+dx = 8.1e-3; % ã‚»ãƒ³ã‚µã®ä¸­å¿ƒã‹ã‚‰ã‚³ã‚¤ãƒ«ã®ä¸­å¿ƒã¾ã§ã®è·é›¢ã¯8.1mm
+w = 0.5./[dx -dx]; % ã‚»ãƒ³ã‚µã«ãŠã‘ã‚‹ç©ºé–“å¾®åˆ†ã‚’è¿‘ä¼¼ã™ã‚‹ãŸã‚ã®é‡ã¿
 
 
-% ƒRƒCƒ‹‚Ì’†S‚ÌˆÊ’uƒxƒNƒgƒ‹CƒTƒCƒY‚Í[3, 2, num_ch]
+% ã‚³ã‚¤ãƒ«ã®ä¸­å¿ƒã®ä½ç½®ãƒ™ã‚¯ãƒˆãƒ«ï¼Œã‚µã‚¤ã‚ºã¯[3, 2, num_ch]
 Rc = reshape(bsxfun(@plus,Rch(:),Ex(:)*[dx -dx]),[3,num_ch*2]);
 
 
-% HeadÀ•WŒn‚Ö‚Ì•ÏŠ·
+% Headåº§æ¨™ç³»ã¸ã®å¤‰æ›
 Rc = permute(reshape(bsxfun(@plus,Rot*Rc,mv),...
     [3,num_ch,2]),[1,3,2]);
 N = Rot*N;
 Rhpi = bsxfun(@plus,Rot*Rhpi,mv);
 
-% “±‘Ì‹…ƒ‚ƒfƒ‹‚Ìƒpƒ‰ƒ[ƒ^
-center = [0;0;0.04];% HeadÀ•WŒn‚É‚¨‚¯‚é’†S
-% “±‘Ì‹…ƒ‚ƒfƒ‹‚Ì’†S‚©‚çHPIƒRƒCƒ‹‚Ü‚Å‚Ì‹——£
+% å°ä½“çƒãƒ¢ãƒ‡ãƒ«ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+center = [0;0;0.04];% Headåº§æ¨™ç³»ã«ãŠã‘ã‚‹ä¸­å¿ƒ
+% å°ä½“çƒãƒ¢ãƒ‡ãƒ«ã®ä¸­å¿ƒã‹ã‚‰HPIã‚³ã‚¤ãƒ«ã¾ã§ã®è·é›¢
 dist = sqrt(sum(bsxfun(@minus,Rhpi,center).^2,1));
 
 
-% MNE‚Ì³‘¥‰»ƒpƒ‰ƒ[ƒ^
+% MNEã®æ­£å‰‡åŒ–ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
 lamda = 7;
 
 
-% HeadÀ•WŒn‚ÅMNE‚Ì‰ğ‚ğŒvZD
+% Headåº§æ¨™ç³»ã§MNEã®è§£ã‚’è¨ˆç®—ï¼
 [M,Rq,L,snr,ev] = mneForSphereModel(Rc,N,w,center,0.9*mean(dist),C,lamda);
 q = M*Y(:,ind_t);
 
 num_dip = size(Rq,2);
 fprintf('Number of grids: %d\n',num_dip);
 
-% Œë·‚ÌŒvZ
+% èª¤å·®ã®è¨ˆç®—
 y_p = L*q;
 err = Y(:,ind_t) - y_p;
 var_err = err'*C^-1*err;
@@ -133,21 +133,21 @@ fprintf('Loss: %f\n',var_err);
 figure;
 plot(ev);
 
-% DeviceÀ•WŒn‚É•ÏŠ·
+% Deviceåº§æ¨™ç³»ã«å¤‰æ›
 Q = Rot'*reshape(q,[3,size(Rq,2)]);
 
 
-% DeviceÀ•WŒn‚ÉÀ•W•ÏŠ·
+% Deviceåº§æ¨™ç³»ã«åº§æ¨™å¤‰æ›
 Rq = Rot'*bsxfun(@minus,Rq,mv);
 center = Rot'*(center-mv);
 
 
-% “™¥ŠEü}‚ğŒvZ
-num_div = 64; % 2ŸŒ³ƒOƒŠƒbƒh‚Ì•ªŠ„”
+% ç­‰ç£ç•Œç·šå›³ã‚’è¨ˆç®—
+num_div = 64; % 2æ¬¡å…ƒã‚°ãƒªãƒƒãƒ‰ã®åˆ†å‰²æ•°
 normalMagneticContour(Q,Rq,center,Rs,Ex_s,Ey_s,N_s,num_div);
 
 
-% “d—¬•ª•z‚Ìƒvƒƒbƒg
+% é›»æµåˆ†å¸ƒã®ãƒ—ãƒ­ãƒƒãƒˆ
 figure;
 quiver3(Rq(1,:),Rq(2,:),Rq(3,:),Q(1,:),Q(2,:),Q(3,:));
 line('XData',Rs(1,:),'YData',Rs(2,:),'ZData',Rs(3,:),...
